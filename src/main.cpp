@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "mandlebrot/shader.hpp"
 
 #include <iostream>
 
@@ -15,16 +16,45 @@ const char *vertexShaderSource = "#version 330 core\n"
     "void main()\n"
     "{\n"
     "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
-const char *fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\n\0";
+    "}\0";\
+
+
+//  const char *fragmentShaderSource = readFile("shaders/test.frag");
+
+ //"#version 330 core\n"
+//     "out vec4 FragColor;\n"
+//     "in vec4 gl_FragCoord;\n"
+//     "void main()\n"
+//     "{\n"
+//     // "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+
+//  "   vec3 color = mix(vec3(1.0, 0.0, 0.0), \n" // Red
+// "                     vec3(0.0, 0.0, 1.0),  // Blue\n"
+// "                     gl_FragCoord.x/1000); "       // Mix based on x position\n
+
+//     "FragColor = vec4(color, 1.0);\n"
+//     "}\n\0";
+
+
+
+// "out vec4 FragColor;\n"
+// "in vec2 TexCoords; // or use gl_FragCoord depending on how your vertex shader is set up\n"
+
+// "void main() {\n"
+//  "   // Assuming TexCoords range from 0.0 to 1.0 across the screen\n"
+//  "   vec3 color = mix(vec3(1.0, 0.0, 0.0), \n" // Red
+// "                     vec3(0.0, 0.0, 1.0),  // Blue\n"
+// "                     TexCoords.x); "       // Mix based on x position\n
+
+//     "FragColor = vec4(color, 1.0);\n"
+// "}\n\0";
+
 
 int main()
 {
+    std::string fragmentShaderSource_nonpointer = readFile("shaders/test.frag").c_str();
+    const char *fragmentShaderSource = fragmentShaderSource_nonpointer.c_str();
+
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
@@ -38,7 +68,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Mandlebrot", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -100,9 +130,10 @@ int main()
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float vertices[] = {
-        -0.5f, -0.5f, 0.0f, // left  
-         0.5f, -0.5f, 0.0f, // right 
-         0.0f,  0.5f, 0.0f  // top   
+        -1.0f, -1.0f, 0.0f, // bottom left  
+         1.0f, -1.0f, 0.0f, // bottom right 
+        -1.0f,  1.0f, 0.0f,  // top left
+        1.0f,  1.0f, 0.0f  // top right
     }; 
 
     unsigned int VBO, VAO;
@@ -144,7 +175,15 @@ int main()
         // draw our first triangle
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        int width, height;
+glfwGetFramebufferSize(window, &width, &height); 
+
+        GLint resolutionLoc = glGetUniformLocation(shaderProgram, "u_resolution");//resolution variable
+    glUseProgram(shaderProgram);
+    glUniform2f(resolutionLoc, (float)width, (float)height);
+
         // glBindVertexArray(0); // no need to unbind it every time 
  
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
