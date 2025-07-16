@@ -49,6 +49,25 @@ const char *vertexShaderSource = "#version 330 core\n"
 //     "FragColor = vec4(color, 1.0);\n"
 // "}\n\0";
 
+/*
+GLOBALS
+ */
+
+double zoom = 2.0;
+
+
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    float zoom_speed = 0.97;
+    if(yoffset > 0){
+        zoom *= zoom_speed;
+    } else if(yoffset < 0){
+        zoom /= zoom_speed;
+    }
+
+}
+
+
 
 int main()
 {
@@ -175,6 +194,7 @@ int main()
         // input
         // -----
         processInput(window);
+        glfwSetScrollCallback(window, scroll_callback);
 
         // render
         // ------
@@ -200,7 +220,7 @@ int main()
         glUniform2f(centerLoc, -0.5, 0.0);
 
         GLint zoomLoc = glGetUniformLocation(shaderProgram, "zoom");
-        glUniform1f(zoomLoc, 2.0);
+        glUniform1f(zoomLoc, zoom);
 
         // glBindVertexArray(0); // no need to unbind it every time 
  
@@ -247,6 +267,16 @@ void processInput(GLFWwindow *window)
         glfwSetWindowShouldClose(window, true);
 }
 
+
+// void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+//     float zoom_speed = 0.9;
+//     if(yoffset > 0){
+//         zoom *= zoom_speed;
+//     } else if(yoffset < 0){
+//         zoom /= zoom_speed;
+//     }
+
+// }
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
