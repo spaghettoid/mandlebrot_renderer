@@ -103,7 +103,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 
 int main() {
     // std::string fragmentShaderSource_nonpointer = readFile("shaders/gradient.frag").c_str();
-    std::string fragmentShaderSource_nonpointer = readFile("shaders/mandlebrot.frag").c_str();
+    // std::string fragmentShaderSource_nonpointer = readFile("shaders/mandlebrot.frag").c_str();
+    std::string fragmentShaderSource_nonpointer = readFile("shaders/Julia_set.frag").c_str();
     const char *fragmentShaderSource = fragmentShaderSource_nonpointer.c_str();
 
     // glfw: initialize and configure
