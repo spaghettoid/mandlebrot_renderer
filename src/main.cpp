@@ -54,32 +54,43 @@ const char *vertexShaderSource = "#version 330 core\n"
 GLOBALS
  */
 
+int width, height;
+
 double zoom = 2.0;
 
 Vector2 center = Vector2(-0.5, 0.0);
 Mouse mouse = Mouse();
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+    std::cout << button;
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         mouse.is_holding = true;
-    } else {
+        std::cout << "beans";
+    } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
         mouse.is_holding = false;
+        std::cout << "ketchup";
     }
+
+    // mouse.is_holding = true;
 }
 
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
     mouse.update_delta(Vector2(xpos, ypos));
-
+    glfwGetFramebufferSize(window, &width, &height); 
+    if(mouse.is_holding && mouse.is_in_window){
+        center.x += zoom * (mouse.delta.x/(width));
+        center.y -= zoom * (mouse.delta.y/(height));
+    }
 }
 
 void cursor_enter_callback(GLFWwindow* window, int entered) {
     if (entered) {
         mouse.is_in_window = true;
     }
-    else {
-        mouse.is_in_window = false;
-        mouse.is_holding = false;
-    }
+    // else {
+    //     mouse.is_in_window = false;
+    //     mouse.is_holding = false;
+    // }
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
@@ -201,7 +212,7 @@ int main() {
 
     // render loop
     // -----------
-    int width, height;
+    // int width, height;
     // const int MaxIteratons = 32;
 
     const int logFrequency = 20;
@@ -215,6 +226,9 @@ int main() {
         // -----
         processInput(window);
         glfwSetScrollCallback(window, scroll_callback);
+        glfwSetMouseButtonCallback(window, mouse_button_callback);
+        glfwSetCursorEnterCallback(window, cursor_enter_callback);
+        glfwSetCursorPosCallback(window, cursor_position_callback);
 
         // render
         // ------
@@ -260,10 +274,11 @@ int main() {
 
         if (increment > logFrequency){
             increment = 0;
-            std::cout << "FPS: " << 1/(FPSSum / logFrequency) << "\n";
+            // std::cout << "FPS: " << 1/(FPSSum / logFrequency) << "\n";
             FPSSum = 0;
         }
 
+        
 
         increment++;
     }
@@ -288,13 +303,13 @@ void processInput(GLFWwindow *window) {
 }
 
 
-// void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-//     float zoom_speed = 0.9;
-//     if(yoffset > 0){
-//         zoom *= zoom_speed;
-//     } else if(yoffset < 0){
-//         zoom /= zoom_speed;
-//     }
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    float zoom_speed = 0.9;
+    if(yoffset > 0){
+        zoom *= zoom_speed;
+    } else if(yoffset < 0){
+        zoom /= zoom_speed;
+    }
 
 // }
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
