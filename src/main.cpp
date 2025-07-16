@@ -62,13 +62,10 @@ Vector2 center = Vector2(-0.5, 0.0);
 Mouse mouse = Mouse();
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-    std::cout << button;
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         mouse.is_holding = true;
-        std::cout << "beans";
     } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
         mouse.is_holding = false;
-        std::cout << "ketchup";
     }
 
     // mouse.is_holding = true;
@@ -274,7 +271,7 @@ int main() {
 
         if (increment > logFrequency){
             increment = 0;
-            // std::cout << "FPS: " << 1/(FPSSum / logFrequency) << "\n";
+            std::cout << "FPS: " << 1/(FPSSum / logFrequency) << "\n";
             FPSSum = 0;
         }
 
@@ -303,13 +300,13 @@ void processInput(GLFWwindow *window) {
 }
 
 
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    float zoom_speed = 0.9;
-    if(yoffset > 0){
-        zoom *= zoom_speed;
-    } else if(yoffset < 0){
-        zoom /= zoom_speed;
-    }
+// void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+//     float zoom_speed = 0.9;
+//     if(yoffset > 0){
+//         zoom *= zoom_speed;
+//     } else if(yoffset < 0){
+//         zoom /= zoom_speed;
+//     }
 
 // }
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
