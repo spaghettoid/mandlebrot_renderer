@@ -1,6 +1,6 @@
-#include <fstream>
-#include <sstream>
-#include <iostream>
+#pragma once
+
+#include "main.h"
 
 std::string readFile(const char* filepath) {
     std::ifstream file(filepath);
