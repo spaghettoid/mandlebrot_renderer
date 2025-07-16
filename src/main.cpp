@@ -52,7 +52,8 @@ const char *vertexShaderSource = "#version 330 core\n"
 
 int main()
 {
-    std::string fragmentShaderSource_nonpointer = readFile("shaders/test.frag").c_str();
+    // std::string fragmentShaderSource_nonpointer = readFile("shaders/gradient.frag").c_str();
+    std::string fragmentShaderSource_nonpointer = readFile("shaders/mandlebrot.frag").c_str();
     const char *fragmentShaderSource = fragmentShaderSource_nonpointer.c_str();
 
     // glfw: initialize and configure
@@ -161,8 +162,16 @@ int main()
 
     // render loop
     // -----------
-    while (!glfwWindowShouldClose(window))
-    {
+    int width, height;
+    // const int MaxIteratons = 32;
+
+    const int logFrequency = 20;
+    double lastTime;
+    double FPSSum = 0.0;
+    int increment = 0;
+
+
+    while (!glfwWindowShouldClose(window)) {
         // input
         // -----
         processInput(window);
@@ -177,12 +186,21 @@ int main()
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-        int width, height;
-glfwGetFramebufferSize(window, &width, &height); 
 
-        GLint resolutionLoc = glGetUniformLocation(shaderProgram, "u_resolution");//resolution variable
-    glUseProgram(shaderProgram);
-    glUniform2f(resolutionLoc, (float)width, (float)height);
+        glfwGetFramebufferSize(window, &width, &height); 
+
+        GLint resolutionLoc = glGetUniformLocation(shaderProgram, "resolution");//resolution variable
+        glUseProgram(shaderProgram);
+        glUniform2f(resolutionLoc, (float)width, (float)height);
+
+        GLint aspectLoc = glGetUniformLocation(shaderProgram, "aspect"); // precomputed aspect ratio
+        glUniform1f(aspectLoc, (float)width/(float)height);
+
+        GLint centerLoc = glGetUniformLocation(shaderProgram, "center");
+        glUniform2f(centerLoc, -0.5, 0.0);
+
+        GLint zoomLoc = glGetUniformLocation(shaderProgram, "zoom");
+        glUniform1f(zoomLoc, 2.0);
 
         // glBindVertexArray(0); // no need to unbind it every time 
  
@@ -190,6 +208,23 @@ glfwGetFramebufferSize(window, &width, &height);
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+
+
+        //Loging the average previous frames FPS
+
+        FPSSum += glfwGetTime() - lastTime;
+
+        lastTime = glfwGetTime();
+
+        if (increment > logFrequency){
+            increment = 0;
+            std::cout << "FPS: " << 1/(FPSSum / logFrequency) << "\n";
+            FPSSum = 0;
+        }
+
+
+        increment++;
     }
 
     // optional: de-allocate all resources once they've outlived their purpose:
